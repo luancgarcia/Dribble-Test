@@ -1,7 +1,3 @@
 .DS_Store
 node_modules
 node_modules/*
-dist/
-dist/*
-src/static/css/
-src/static/css/*
