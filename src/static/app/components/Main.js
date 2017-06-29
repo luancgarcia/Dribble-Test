@@ -18,7 +18,6 @@ class Main extends Component {
 		return (
 
 			<div>
-				teste
 				{ this.props.children }
 			</div>
 		)

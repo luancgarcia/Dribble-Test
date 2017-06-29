@@ -27934,7 +27934,6 @@
 				return _react2.default.createElement(
 					'div',
 					null,
-					'teste',
 					this.props.children
 				);
 			}
@@ -30088,6 +30087,8 @@
 		value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _reflux = __webpack_require__(249);
 
 	var _reflux2 = _interopRequireDefault(_reflux);
@@ -30108,6 +30109,14 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var CLIENT_ID = '0f772b56f1c253cd98077e0be6340016a7e96916f9826aef4fb3b59a56442d50';
+	var CLIENT_SECRET = '0fa98ec578b41e9731faf4f080c4ddc36ae9664d4c08f10f6de209d216853255';
+	var ACCESS_TOKEN = '04e0cabe39b68eba31d3d107faf3dc259d45448242bd4af0716fa042a4e2d072';
+
+	var API_URL = 'https://api.dribbble.com/v1/';
+	var API_AUTH = 'https://api.dribbble.com/v1/user?access_token=' + ACCESS_TOKEN;
+	var API_USER = 'https://dribbble.com/oauth/token';
+
 	var StoreHome = function (_Store) {
 		_inherits(StoreHome, _Store);
 
@@ -30119,22 +30128,44 @@
 			_this.api = new _Api2.default();
 
 			_this.state = {
-				listSlides: [],
-				featured: []
+				urlApi: null
+			};
 
-				// Pega os dados de slides da home
-			};_this.api.getConfig().then(function (response) {
+			_axios2.default.get(API_AUTH).then(function (response) {
 				console.log(response);
-				// this.setState({
-				// 	listSlides: response.data.pages[0].collections,
-				// 	featured: response.data.featured
-				// });
+				localStorage.setItem('url', response.data.buckets_url);
 			}).catch(function (error) {
 				console.log(error);
 			});
 
+			// axios.post(API_URL)
+			//   .then(function (response) {
+			//     console.log(response);
+			//   })
+			//   .catch(function (error) {
+			//     console.log(error);
+			//   });
+
+			// Pega os dados de slides da home
+			// this.api.getConfig().then((response) => {
+			// 	console.log('config: ', response);
+			// 	// this.setState({
+			// 	// 	listSlides: response.data.pages[0].collections,
+			// 	// 	featured: response.data.featured
+			// 	// });
+			// })
+			// .catch((error) => {
+			// 	console.log(error);
+			// });
 			return _this;
 		}
+
+		_createClass(StoreHome, [{
+			key: 'componentWillMount',
+			value: function componentWillMount() {
+				console.log(this.state.urlApi);
+			}
+		}]);
 
 		return StoreHome;
 	}(_reflux.Store);
@@ -31375,8 +31406,13 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var API_URL = 'https://api.dribbble.com/v1/users/';
-	var API_AUTH = 'https://api.dribbble.com/v1/user?access_token=OAUTH_TOKEN';
+	var CLIENT_ID = '0f772b56f1c253cd98077e0be6340016a7e96916f9826aef4fb3b59a56442d50';
+	var CLIENT_SECRET = '0fa98ec578b41e9731faf4f080c4ddc36ae9664d4c08f10f6de209d216853255';
+	var ACCESS_TOKEN = '04e0cabe39b68eba31d3d107faf3dc259d45448242bd4af0716fa042a4e2d072';
+
+	var API_URL = 'https://api.dribbble.com/v1/';
+	var API_AUTH = 'https://api.dribbble.com/v1/user?access_token=' + ACCESS_TOKEN;
+	var API_USER = 'https://dribbble.com/oauth/token';
 
 	var Api = function () {
 	    function Api() {
@@ -31384,6 +31420,7 @@
 
 	        this.baseURL = API_URL;
 	        this.baseAuth = API_AUTH;
+	        this.baseUser = API_USER;
 	        this.auth = this.auth.bind(this);
 	    }
 
@@ -31415,10 +31452,15 @@
 	        value: function getConfig() {
 	            return this.execute('get', this.baseURL + "simplebits", "");
 	        }
+
+	        // getUser(){
+	        //   return this.execute('post', 'https://dribbble.com/oauth/token');
+	        // }
+
 	    }, {
 	        key: 'auth',
-	        value: function auth(data) {
-	            return this.execute('get', this.baseAuth, data);
+	        value: function auth() {
+	            return this.execute('POST', this.baseAuth);
 	        }
 
 	        // playback(data){
