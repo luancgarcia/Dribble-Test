@@ -16,7 +16,7 @@ class Api {
     this.baseURL = API_URL;
     this.baseAuth = API_AUTH;
     this.baseUser = API_USER;
-    this.auth = this.auth.bind(this);
+    // this.auth = this.auth.bind(this);
   }
 
   execute(method, url, params){      
@@ -40,17 +40,17 @@ class Api {
       return axios[method](url + stringParams)
   }
 
-  getConfig(){
-      return this.execute('get', this.baseURL+"simplebits",  "");
-  }
+  // getConfig(){
+  //     return this.execute('get', this.baseURL+"simplebits",  "");
+  // }
 
   // getUser(){
   //   return this.execute('post', 'https://dribbble.com/oauth/token');
   // }
 
-  auth() {
-      return this.execute('POST',this.baseAuth);
-  }
+  // auth() {
+  //     return this.execute('POST',this.baseAuth);
+  // }
 
   // playback(data){
   //     return this.execute('post', this.baseURL + 'userexperience/playback/', data);

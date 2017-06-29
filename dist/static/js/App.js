@@ -30113,7 +30113,7 @@
 	var CLIENT_SECRET = '0fa98ec578b41e9731faf4f080c4ddc36ae9664d4c08f10f6de209d216853255';
 	var ACCESS_TOKEN = '04e0cabe39b68eba31d3d107faf3dc259d45448242bd4af0716fa042a4e2d072';
 
-	var API_URL = 'https://api.dribbble.com/v1/';
+	var API_URL = 'https://api.dribbble.com/v1/users/1797792/shots';
 	var API_AUTH = 'https://api.dribbble.com/v1/user?access_token=' + ACCESS_TOKEN;
 	var API_USER = 'https://dribbble.com/oauth/token';
 
@@ -30133,7 +30133,12 @@
 
 			_axios2.default.get(API_AUTH).then(function (response) {
 				console.log(response);
-				localStorage.setItem('url', response.data.buckets_url);
+			}).catch(function (error) {
+				console.log(error);
+			});
+
+			_axios2.default.get(API_URL).then(function (response) {
+				console.log('sdf', response);
 			}).catch(function (error) {
 				console.log(error);
 			});
@@ -31421,7 +31426,7 @@
 	        this.baseURL = API_URL;
 	        this.baseAuth = API_AUTH;
 	        this.baseUser = API_USER;
-	        this.auth = this.auth.bind(this);
+	        // this.auth = this.auth.bind(this);
 	    }
 
 	    _createClass(Api, [{
@@ -31447,21 +31452,18 @@
 	            }
 	            return _axios2.default[method](url + stringParams);
 	        }
-	    }, {
-	        key: 'getConfig',
-	        value: function getConfig() {
-	            return this.execute('get', this.baseURL + "simplebits", "");
-	        }
+
+	        // getConfig(){
+	        //     return this.execute('get', this.baseURL+"simplebits",  "");
+	        // }
 
 	        // getUser(){
 	        //   return this.execute('post', 'https://dribbble.com/oauth/token');
 	        // }
 
-	    }, {
-	        key: 'auth',
-	        value: function auth() {
-	            return this.execute('POST', this.baseAuth);
-	        }
+	        // auth() {
+	        //     return this.execute('POST',this.baseAuth);
+	        // }
 
 	        // playback(data){
 	        //     return this.execute('post', this.baseURL + 'userexperience/playback/', data);
