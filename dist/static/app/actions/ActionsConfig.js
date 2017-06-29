@@ -1,8 +1,7 @@
 var Reflux = require('reflux');
 var ActionsConfig = Reflux.createActions([
-	"hasSearch",
-	"hasControlAccess",
-	"hasFeatured",
+	"getUser",
+	"getLists"
 ]);
 
 module.exports = ActionsConfig;

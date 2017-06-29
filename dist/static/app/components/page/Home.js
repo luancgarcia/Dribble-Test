@@ -3,24 +3,24 @@ import Reflux, { Component } from 'reflux';
 
 import StoreHome from '../../stores/StoreHome';
 
+
 class Home extends Component {
 
     constructor (props){
         super(props);
 
         // this.state = {
-        //     programas : []
+        //     user : null
         // }
 
         // Chama os dados dos slides
         this.stores = [StoreHome];
-    }
 
-    componentDidUpdate(prevProps, prevState){
+        
         
     }
-
     render(){
+        // console.log('state: ', this.state.user);
         return(
             <section className="home">
                 teste
