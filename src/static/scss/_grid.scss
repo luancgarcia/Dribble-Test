@@ -1,0 +1,92 @@
+//COLUNAS
+.col-1,.col-2,.col-3,.col-4,
+.col-5,.col-6,.col-7,.col-8,
+.col-9,.col-10,.col-11,.col-12{
+	float: left;
+	width: 100%;
+}
+
+.col-left{
+	float: left;
+}
+
+.col-right{
+	float: right;
+}
+
+@media (min-width: 720px) {
+	.col-1{width: 8.33%;}
+	.col-2{width: 16.66%;}
+	.col-3{width: 24.99%;}
+	.col-4{width: 33.33%;}
+	.col-5{width: 41.65%;}
+	.col-6{width: 49.98%;}
+	.col-7{width: 58.31%;}
+	.col-8{width: 66.64%;}
+	.col-9{width: 74.97%;}
+	.col-10{width: 83.3%;}
+	.col-11{width: 91.66%;}
+	.col-12{width: 100%;}
+}
+
+.container:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+//Largura container
+@media screen and (min-width: 1240px) {
+	.container{ width: 1240px; margin: 0 auto; }
+}
+
+@media screen and (max-width: 1239px) {
+	.container{ width: 960px; margin: 0 auto; }
+}
+
+@media screen and (max-width: 960px) {
+	.container{ width: 720px; margin: 0 auto; }
+}
+
+@media screen and (max-width: 720px) {
+	.container{ width: 460px; margin: 0 auto; }
+}
+
+@media screen and (max-width: 460px) {
+	.container{ width: 360px; margin: 0 auto; }
+}
+
+//Espaçamento e margem
+.padding-5{
+	padding: 5px;
+}
+
+/*********************
+BREAKPOINTS
+*********************/
+
+$breakpoints: (
+  'small':  767px,
+  'medium': 992px,
+  'large':  1200px
+) !default;
+
+/// Mixin to manage responsive breakpoints
+/// @author Hugo Giraudel
+/// @param {String} $breakpoint - Breakpoint name
+/// @require $breakpoints
+@mixin respond-to($breakpoint) {
+  // If the key exists in the map
+  @if map-has-key($breakpoints, $breakpoint) {
+    // Prints a media query based on the value
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  }
+ 
+  // If the key doesn't exist in the map
+  @else {
+    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+        + "Available breakpoints are: #{map-keys($breakpoints)}.";
+  }
+}
