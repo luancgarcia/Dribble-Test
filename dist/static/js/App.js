@@ -30091,7 +30091,6 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            console.log("render");
 	            var loader = _react2.default.createElement(
 	                'div',
 	                null,
@@ -31804,7 +31803,6 @@
 				var _this2 = this;
 
 				_axios2.default.get(api.baseUrl + '/' + this.state.id + '?access_token=' + api.client_id).then(function (response) {
-					console.log(response);
 					var res = response.data;
 					_this2.setState({
 						image: res.images.teaser,
