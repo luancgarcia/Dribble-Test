@@ -1,0 +1,169 @@
+/* Css*/
+@import "_reset.scss";
+@import "_mixins.scss";
+
+html, body {
+	min-width: 320px;
+}
+
+body{
+	font-family: 'Tahoma', 'Arial', serif;
+}
+
+.Shot {
+	display: block;
+	color: #fff;
+	padding: 10px;
+	max-width: 25%;
+	width: 100%;
+	float: left;
+	position: relative;
+	@include transition(all ease-in .1s);
+
+	a {
+		border: 1px solid rgba(0,0,0,0.8);
+		color: inherit;
+		display: block;	
+		position: relative;
+	}
+
+	figure {
+		display: block;
+		width: 100%;
+		img {
+			display: block;
+			width: 100%;
+		}
+	}
+
+	
+
+	.info {
+		height: 50px;
+		position: absolute;
+		bottom: 0px;
+		width: 100%;
+		background-color: rgba(0,0,0,0.8);
+		padding: 7px 12px;
+		font-size: 13px;
+
+		.title {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			margin-bottom: 3px;
+			font-size: 16px;
+		}
+
+		p {
+			font-size: 12px;
+		}
+	}
+
+	.avatar {
+		max-width: 50px;
+		position: absolute;
+		top: 10px;
+		right: 10px;
+
+		img {
+			max-width: 100%;
+		}
+	}
+
+	&:hover {
+		@include scale(1.1);
+		z-index: 10;
+	}
+}
+
+.PageDetails {
+	padding: 10px;
+	max-width: 960px;
+	margin: 0 auto;
+
+	.Shot {
+		padding: 0px;
+		max-width: none;
+		height: auto;
+		float: none;
+
+		&:hover {
+			@include scale(1);
+		}	
+	}
+}
+
+.others-details {
+	padding: 20px;
+	
+	header {
+		overflow: hidden;
+		padding-bottom: 10px;
+		margin-bottom: 20px;
+		border-bottom: 1px solid rgba(0,0,0,0.8);
+
+
+		figure {
+			float: left;
+			margin-right: 20px;
+
+			img {
+				max-width: 50px;
+			}
+		}
+
+		.title {
+			color: #222;
+			line-height: 50px;
+			font-size: 22px;
+		}
+	}
+
+	article {
+		font-size: 14px;
+		p {
+			margin-bottom: 15px;
+		}
+
+		a {
+			color: #111;
+			text-decoration: underline;
+		}
+	}
+}
+.avatar {
+	display: block;
+	overflow: hidden;
+	@include border-radius(50%);
+	
+	img {
+		float: left;
+	}
+
+}
+
+@media (max-width: 960px) { 
+	.Shot {
+		max-width: calc(100%/3);
+
+		&:hover {
+			@include scale(1);
+		}
+	}
+}
+
+@media  (max-width: 720px) {
+	.Shot {
+		max-width: 50%;
+
+
+	}	
+}
+@media (max-width: 460px) {
+	.Shot {
+		max-width: 100%;
+	}	
+}
+
+

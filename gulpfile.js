@@ -14,7 +14,7 @@ var jsx_url = base_url + 'static/app';
 gulp.task('sass', function () {
     gulp.src(sass_url)
     .pipe(sass().on('error', sass.logError))
-    .pipe(sass({outputStyle: 'compressed'}))
+    // .pipe(sass({outputStyle: 'compressed'}))
     .pipe(gulp.dest(css_url));
 });
 
@@ -24,7 +24,7 @@ gulp.task('copy', function() {
     gulp.src(base_url +'**/**/*.{ttf,woff,eot,svg}').pipe(gulp.dest(dist_url));
     gulp.src(base_url +'**/**/*.html').pipe(gulp.dest(dist_url));
     gulp.src(base_url +'**/**/*.{gif,jpg,png}').pipe(gulp.dest(dist_url));
-    gulp.src([base_url +'**/**/*.js', '!src/**/**/custom-*.js']).pipe(gulp.dest(dist_url));
+    gulp.src(base_url +'**/**/*.js').pipe(gulp.dest(dist_url));
     gulp.src(base_url +'**/**/*.css').pipe(gulp.dest(dist_url));
 
 });

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import InfiniteScroll from '../utils/InfiniteScroll';
 
-import Box from './Box';
+import Shot from './Shot';
 
 const api = {
     baseUrl: 'https://api.dribbble.com/v1/shots',
@@ -56,7 +56,7 @@ class Home extends Component {
 
         this.state.tracks.map((track, i) => {
             items.push(
-                <Box data={ track } key={ i } />
+                <Shot data={ track } key={ i } />
             );
         });
         return (    

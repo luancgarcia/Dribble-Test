@@ -4691,17 +4691,13 @@
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _reactGa = __webpack_require__(292);
+	var _Details = __webpack_require__(294);
 
-	var _reactGa2 = _interopRequireDefault(_reactGa);
+	var _Details2 = _interopRequireDefault(_Details);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var url = '/';
-	// <Route authorize={['regular']} component={ Profile } path={ url + "perfil/" } ></Route>
-
-	// import Profile from './components/page/Profile';
-
 	exports.start = function () {
 
 		_reactDom2.default.render(_react2.default.createElement(
@@ -4710,7 +4706,8 @@
 			_react2.default.createElement(
 				_reactRouter.Route,
 				{ path: url, component: _Main2.default },
-				_react2.default.createElement(_reactRouter.IndexRoute, { component: _Home2.default })
+				_react2.default.createElement(_reactRouter.IndexRoute, { component: _Home2.default }),
+				_react2.default.createElement(_reactRouter.Route, { component: _Details2.default, path: url + "details/:id" })
 			)
 		), document.getElementById('app'));
 	};
@@ -27925,9 +27922,6 @@
 		}
 
 		_createClass(Main, [{
-			key: 'componentDidMount',
-			value: function componentDidMount() {}
-		}, {
 			key: 'render',
 			value: function render() {
 
@@ -27945,8 +27939,6 @@
 	;
 
 	exports.default = Main;
-
-	// no return acima do componente Copywriter, colocar <Footer menu={menu} /> quando for pra voltar com o menu do footer.
 
 /***/ }),
 /* 249 */
@@ -30023,13 +30015,21 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reflux = __webpack_require__(249);
+	var _reactDom = __webpack_require__(38);
 
-	var _reflux2 = _interopRequireDefault(_reflux);
+	var _reactDom2 = _interopRequireDefault(_reactDom);
 
-	var _StoreHome = __webpack_require__(271);
+	var _axios = __webpack_require__(271);
 
-	var _StoreHome2 = _interopRequireDefault(_StoreHome);
+	var _axios2 = _interopRequireDefault(_axios);
+
+	var _InfiniteScroll = __webpack_require__(290);
+
+	var _InfiniteScroll2 = _interopRequireDefault(_InfiniteScroll);
+
+	var _Shot = __webpack_require__(293);
+
+	var _Shot2 = _interopRequireDefault(_Shot);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30039,38 +30039,84 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var api = {
+	    baseUrl: 'https://api.dribbble.com/v1/shots',
+	    client_id: '04e0cabe39b68eba31d3d107faf3dc259d45448242bd4af0716fa042a4e2d072'
+	};
+
 	var Home = function (_Component) {
 	    _inherits(Home, _Component);
 
 	    function Home(props) {
 	        _classCallCheck(this, Home);
 
-	        // this.state = {
-	        //     user : null
-	        // }
-
-	        // Chama os dados dos slides
 	        var _this = _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
 
-	        _this.stores = [_StoreHome2.default];
+	        _this.state = {
+	            tracks: [],
+	            hasMoreItems: true,
+	            pagination: 0
+	        };
 
 	        return _this;
 	    }
 
 	    _createClass(Home, [{
+	        key: 'loadItems',
+	        value: function loadItems(page) {
+	            var _this2 = this;
+
+	            _axios2.default.get(api.baseUrl + '?access_token=' + api.client_id + '&page=' + page + '&per_page=1').then(function (response) {
+
+	                if (response) {
+
+	                    var tracks = _this2.state.tracks;
+	                    var data = response.data;
+
+	                    data.map(function (res) {
+	                        tracks.push(res);
+
+	                        _this2.setState({
+	                            tracks: tracks
+	                        });
+	                    });
+	                }
+	            }).catch(function (err) {
+	                _this2.setState({
+	                    hasMoreItems: false
+	                });
+	                console.log(err);
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            // console.log('state: ', this.state.user);
+	            console.log("render");
+	            var loader = _react2.default.createElement(
+	                'div',
+	                null,
+	                'loading...'
+	            );
+
+	            var items = [];
+
+	            this.state.tracks.map(function (track, i) {
+	                items.push(_react2.default.createElement(_Shot2.default, { data: track, key: i }));
+	            });
 	            return _react2.default.createElement(
-	                'section',
-	                { className: 'home' },
-	                'teste'
+	                _InfiniteScroll2.default,
+	                {
+	                    pageStart: 0,
+	                    loadMore: this.loadItems.bind(this),
+	                    hasMore: this.state.hasMoreItems,
+	                    loader: loader },
+	                items
 	            );
 	        }
 	    }]);
 
 	    return Home;
-	}(_reflux.Component);
+	}(_react.Component);
 
 	;
 
@@ -30080,118 +30126,22 @@
 /* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _reflux = __webpack_require__(249);
-
-	var _reflux2 = _interopRequireDefault(_reflux);
-
-	var _axios = __webpack_require__(272);
-
-	var _axios2 = _interopRequireDefault(_axios);
-
-	var _Api = __webpack_require__(291);
-
-	var _Api2 = _interopRequireDefault(_Api);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var StoreHome = function (_Store) {
-		_inherits(StoreHome, _Store);
-
-		function StoreHome() {
-			_classCallCheck(this, StoreHome);
-
-			var _this = _possibleConstructorReturn(this, (StoreHome.__proto__ || Object.getPrototypeOf(StoreHome)).call(this));
-
-			_this.api = new _Api2.default();
-
-			_this.state = {
-				user: []
-			};
-
-			_this.api.auth().then(function (response) {
-				_this.setState({
-					user: response.data
-				});
-			}).catch(function (error) {
-				console.log(error);
-			});
-
-			_this.api.getConfig().then(function (response) {
-				console.log('getconfig:', response);
-				_this.setState({
-					user: response.data
-				});
-			}).catch(function (error) {
-
-				console.log('getconfigerror: ', error);
-			});
-
-			// axios.get(API_URL).then((response) => {
-			//     console.log('sdf', response);
-
-			// }).catch((error) => {
-			// 	console.log(error);
-			// });
-
-			// axios.post(API_URL)
-			//   .then(function (response) {
-			//     console.log(response);
-			//   })
-			//   .catch(function (error) {
-			//     console.log(error);
-			//   });
-
-			// Pega os dados de slides da home
-			// this.api.getConfig().then((response) => {
-			// 	console.log('config: ', response);
-			// 	// this.setState({
-			// 	// 	listSlides: response.data.pages[0].collections,
-			// 	// 	featured: response.data.featured
-			// 	// });
-			// })
-			// .catch((error) => {
-			// 	console.log(error);
-			// });
-			return _this;
-		}
-
-		return StoreHome;
-	}(_reflux.Store);
-
-	exports.default = StoreHome;
+	module.exports = __webpack_require__(272);
 
 /***/ }),
 /* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(273);
-
-/***/ }),
-/* 273 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	'use strict';
 
-	var defaults = __webpack_require__(274);
-	var utils = __webpack_require__(275);
-	var dispatchRequest = __webpack_require__(277);
-	var InterceptorManager = __webpack_require__(286);
-	var isAbsoluteURL = __webpack_require__(287);
-	var combineURLs = __webpack_require__(288);
-	var bind = __webpack_require__(289);
-	var transformData = __webpack_require__(281);
+	var defaults = __webpack_require__(273);
+	var utils = __webpack_require__(274);
+	var dispatchRequest = __webpack_require__(276);
+	var InterceptorManager = __webpack_require__(285);
+	var isAbsoluteURL = __webpack_require__(286);
+	var combineURLs = __webpack_require__(287);
+	var bind = __webpack_require__(288);
+	var transformData = __webpack_require__(280);
 
 	function Axios(defaultConfig) {
 	  this.defaults = utils.merge({}, defaultConfig);
@@ -30280,7 +30230,7 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(290);
+	axios.spread = __webpack_require__(289);
 
 	// Provide aliases for supported request methods
 	utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
@@ -30308,13 +30258,13 @@
 
 
 /***/ }),
-/* 274 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
-	var normalizeHeaderName = __webpack_require__(276);
+	var utils = __webpack_require__(274);
+	var normalizeHeaderName = __webpack_require__(275);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -30386,7 +30336,7 @@
 
 
 /***/ }),
-/* 275 */
+/* 274 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -30669,12 +30619,12 @@
 
 
 /***/ }),
-/* 276 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -30687,7 +30637,7 @@
 
 
 /***/ }),
-/* 277 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30709,10 +30659,10 @@
 	        adapter = config.adapter;
 	      } else if (typeof XMLHttpRequest !== 'undefined') {
 	        // For browsers use XHR adapter
-	        adapter = __webpack_require__(278);
+	        adapter = __webpack_require__(277);
 	      } else if (typeof process !== 'undefined') {
 	        // For node use HTTP adapter
-	        adapter = __webpack_require__(278);
+	        adapter = __webpack_require__(277);
 	      }
 
 	      if (typeof adapter === 'function') {
@@ -30728,18 +30678,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 278 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(275);
-	var buildURL = __webpack_require__(279);
-	var parseHeaders = __webpack_require__(280);
-	var transformData = __webpack_require__(281);
-	var isURLSameOrigin = __webpack_require__(282);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(283);
-	var settle = __webpack_require__(284);
+	var utils = __webpack_require__(274);
+	var buildURL = __webpack_require__(278);
+	var parseHeaders = __webpack_require__(279);
+	var transformData = __webpack_require__(280);
+	var isURLSameOrigin = __webpack_require__(281);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(282);
+	var settle = __webpack_require__(283);
 
 	module.exports = function xhrAdapter(resolve, reject, config) {
 	  var requestData = config.data;
@@ -30836,7 +30786,7 @@
 	  // This is only done if running in a standard browser environment.
 	  // Specifically not if we're in a web worker, or react-native.
 	  if (utils.isStandardBrowserEnv()) {
-	    var cookies = __webpack_require__(285);
+	    var cookies = __webpack_require__(284);
 
 	    // Add xsrf header
 	    var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
@@ -30897,12 +30847,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 279 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -30971,12 +30921,12 @@
 
 
 /***/ }),
-/* 280 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	/**
 	 * Parse headers into an object
@@ -31014,12 +30964,12 @@
 
 
 /***/ }),
-/* 281 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	/**
 	 * Transform the data for a request or a response
@@ -31040,12 +30990,12 @@
 
 
 /***/ }),
-/* 282 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -31114,7 +31064,7 @@
 
 
 /***/ }),
-/* 283 */
+/* 282 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -31156,7 +31106,7 @@
 
 
 /***/ }),
-/* 284 */
+/* 283 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -31180,12 +31130,12 @@
 
 
 /***/ }),
-/* 285 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -31239,12 +31189,12 @@
 
 
 /***/ }),
-/* 286 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(275);
+	var utils = __webpack_require__(274);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -31297,7 +31247,7 @@
 
 
 /***/ }),
-/* 287 */
+/* 286 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -31317,7 +31267,7 @@
 
 
 /***/ }),
-/* 288 */
+/* 287 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -31335,7 +31285,7 @@
 
 
 /***/ }),
-/* 289 */
+/* 288 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -31352,7 +31302,7 @@
 
 
 /***/ }),
-/* 290 */
+/* 289 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -31385,803 +31335,228 @@
 
 
 /***/ }),
-/* 291 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _axios = __webpack_require__(272);
-
-	var _axios2 = _interopRequireDefault(_axios);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var CLIENT_ID = '0f772b56f1c253cd98077e0be6340016a7e96916f9826aef4fb3b59a56442d50';
-	var CLIENT_SECRET = '0fa98ec578b41e9731faf4f080c4ddc36ae9664d4c08f10f6de209d216853255';
-	var ACCESS_TOKEN = '04e0cabe39b68eba31d3d107faf3dc259d45448242bd4af0716fa042a4e2d072';
-
-	var API_AUTH = 'https://api.dribbble.com/v1/user?access_token=' + ACCESS_TOKEN;
-	var API_URL = 'https://api.dribbble.com/v1/users/1797792/shots?access_token=' + ACCESS_TOKEN;
-
-	var API_USER = 'https://dribbble.com/oauth/token';
-
-	var Api = function () {
-	    function Api() {
-	        _classCallCheck(this, Api);
-
-	        this.baseURL = API_URL;
-	        this.baseAuth = API_AUTH;
-	        this.baseUser = API_USER;
-	    }
-
-	    _createClass(Api, [{
-	        key: 'execute',
-	        value: function execute(method, url, params) {
-	            var stringParams = '';
-	            // console.log(method, url, params);
-	            if (params) {
-	                stringParams = '?';
-	                if (typeof params === 'string') {
-	                    stringParams += params;
-	                } else if ((typeof params === 'undefined' ? 'undefined' : _typeof(params)) === 'object') {
-	                    for (var key in params) {
-	                        stringParams += key + '=' + params[key] + '&';
-	                    }
-	                } else {
-	                    console.error('APIError[', url, ']: params must be string or object ');
-	                    return;
-	                }
-	            }
-	            if (method == 'patch' || method == 'put' || method == 'post' && (typeof params === 'undefined' ? 'undefined' : _typeof(params)) === 'object') {
-	                return _axios2.default[method](url, params);
-	            }
-	            return _axios2.default[method](url + stringParams);
-	        }
-	    }, {
-	        key: 'auth',
-	        value: function auth() {
-	            return this.execute('get', API_AUTH);
-	        }
-	    }, {
-	        key: 'getConfig',
-	        value: function getConfig() {
-	            return this.execute('get', API_URL);
-	        }
-	    }]);
-
-	    return Api;
-	}();
-
-	exports.default = Api;
-
-/***/ }),
-/* 292 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/**
-	 * React Google Analytics Module
-	 *
-	 * @package react-ga
-	 * @author  Adam Lofting <adam@mozillafoundation.org>
-	 *          Atul Varma <atul@mozillafoundation.org>
-	 */
-
-	/**
-	 * Utilities
-	 */
-	var format = __webpack_require__(293);
-	var removeLeadingSlash = __webpack_require__(298);
-	var trim = __webpack_require__(296);
-
-	var warn = __webpack_require__(297);
-	var log = __webpack_require__(299);
-
-	var _debug = false;
-	var _titleCase = true;
-
-	var _format = function (s) {
-	  return format(s, _titleCase);
-	};
-
-	var ReactGA = {
-	  initialize: function (gaTrackingID, options) {
-	    if (!gaTrackingID) {
-	      warn('gaTrackingID is required in initialize()');
-	      return;
-	    }
-
-	    if (options) {
-	      if (options.debug && options.debug === true) {
-	        _debug = true;
-	      }
-
-	      if (options.titleCase === false) {
-	        _titleCase = false;
-	      }
-	    }
-
-	    // https://developers.google.com/analytics/devguides/collection/analyticsjs/
-	    // jscs:disable
-	    (function (i, s, o, g, r, a, m) {
-	      i['GoogleAnalyticsObject'] = r;
-	      i[r] = i[r] || function () {
-	        (i[r].q = i[r].q || []).push(arguments);
-	      }, i[r].l = 1 * new Date();
-	      a = s.createElement(o),
-	          m = s.getElementsByTagName(o)[0];
-	      a.async = 1;
-	      a.src = g;
-	      m.parentNode.insertBefore(a, m);
-	    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-	    // jscs:enable
-
-	    if (options && options.gaOptions) {
-	      ga('create', gaTrackingID, options.gaOptions);
-	    } else {
-	      ga('create', gaTrackingID, 'auto');
-	    }
-	  },
-
-	  /**
-	   * ga:
-	   * Returns the original GA object.
-	   */
-	  ga: function () {
-	    if (arguments.length > 0) {
-	      ga.apply(this, arguments);
-	      if (_debug) {
-	        log('called ga(\'arguments\');');
-	        log('with arguments: ' + JSON.stringify([].slice.apply(arguments)));
-	      }
-
-	      return;
-	    }
-
-	    return ga;
-	  },
-
-	  /**
-	   * set:
-	   * GA tracker set method
-	   * @param {Object} fieldsObject - a field/value pair or a group of field/value pairs on the tracker
-	   */
-	  set: function (fieldsObject) {
-	    if (typeof ga === 'function') {
-	      if (!fieldsObject) {
-	        warn('`fieldsObject` is required in .set()');
-	        return;
-	      }
-
-	      if (typeof fieldsObject !== 'object') {
-	        warn('Expected `fieldsObject` arg to be an Object');
-	        return;
-	      }
-
-	      if (Object.keys(fieldsObject).length === 0) {
-	        warn('empty `fieldsObject` given to .set()');
-	      }
-
-	      ga('set', fieldsObject);
-
-	      if (_debug) {
-	        log('called ga(\'set\', fieldsObject);');
-	        log('with fieldsObject: ' + JSON.stringify(fieldsObject));
-	      }
-	    }
-	  },
-
-	  /**
-	   * send:
-	   * Clone of the low level `ga.send` method
-	   * WARNING: No validations will be applied to this
-	   * @param  {Object} fieldObject - field object for tracking different analytics
-	   */
-	  send: function (fieldObject) {
-	    if (typeof ga === 'function') {
-	      ga('send', fieldObject);
-
-	      if (_debug) {
-	        log('called ga(\'send\', fieldObject);');
-	        log('with fieldObject: ' + JSON.stringify(fieldObject));
-	      }
-	    }
-	  },
-
-	  /**
-	   * pageview:
-	   * Basic GA pageview tracking
-	   * @param  {String} path - the current page page e.g. '/about'
-	   */
-	  pageview: function (path) {
-	    if (!path) {
-	      warn('path is required in .pageview()');
-	      return;
-	    }
-
-	    path = trim(path);
-	    if (path === '') {
-	      warn('path cannot be an empty string in .pageview()');
-	      return;
-	    }
-
-	    if (typeof ga === 'function') {
-	      ga('send', 'pageview', path);
-
-	      if (_debug) {
-	        log('called ga(\'send\', \'pageview\', path);');
-	        log('with path: ' + path);
-	      }
-	    }
-	  },
-
-	  /**
-	   * modalview:
-	   * a proxy to basic GA pageview tracking to consistently track
-	   * modal views that are an equivalent UX to a traditional pageview
-	   * @param  {String} modalName e.g. 'add-or-edit-club'
-	   */
-	  modalview: function (modalName) {
-	    if (!modalName) {
-	      warn('modalName is required in .modalview(modalName)');
-	      return;
-	    }
-
-	    modalName = trim(modalName);
-	    modalName = removeLeadingSlash(modalName);
-
-	    if (modalName === '') {
-	      warn('modalName cannot be an empty string or a single / in .modalview()');
-	      return;
-	    }
-
-	    if (typeof ga === 'function') {
-	      modalName = trim(modalName);
-	      var path = '/modal/' + modalName;
-	      ga('send', 'pageview', path);
-
-	      if (_debug) {
-	        log('called ga(\'send\', \'pageview\', path);');
-	        log('with path: ' + path);
-	      }
-	    }
-	  },
-
-	  /**
-	   * timing:
-	   * GA timing
-	   * @param args.category {String} required
-	   * @param args.variable {String} required
-	   * @param args.value  {Int}  required
-	   * @param args.label  {String} required
-	   */
-	  timing: function (args) {
-	    if (typeof ga === 'function') {
-	      if (!args || !args.category || !args.variable
-	          || !args.value || typeof args.value !== 'number') {
-	        warn('args.category, args.variable ' +
-	              'AND args.value are required in timing() ' +
-	              'AND args.value has to be a number');
-	        return;
-	      }
-
-	      //Required Fields
-	      var fieldObject = {
-	        hitType: 'timing',
-	        timingCategory: _format(args.category),
-	        timingVar: _format(args.variable),
-	        timingValue: args.value
-	      };
-
-	      if (args.label) {
-	        fieldObject.timingLabel = _format(args.label);
-	      }
-
-	      this.send(fieldObject);
-	    }
-	  },
-
-	  /**
-	   * event:
-	   * GA event tracking
-	   * @param args.category {String} required
-	   * @param args.action {String} required
-	   * @param args.label {String} optional
-	   * @param args.value {Int} optional
-	   * @param args.nonInteraction {boolean} optional
-	   */
-	  event: function (args) {
-	    if (typeof ga === 'function') {
-
-	      // Simple Validation
-	      if (!args || !args.category || !args.action) {
-	        warn('args.category AND args.action are required in event()');
-	        return;
-	      }
-
-	      // Required Fields
-	      var fieldObject = {
-	        hitType: 'event',
-	        eventCategory: _format(args.category),
-	        eventAction: _format(args.action)
-	      };
-
-	      // Optional Fields
-	      if (args.label) {
-	        fieldObject.eventLabel = _format(args.label);
-	      }
-
-	      if (args.hasOwnProperty('value')) {
-	        if (typeof args.value !== 'number') {
-	          warn('Expected `args.value` arg to be a Number.');
-	        } else {
-	          fieldObject.eventValue = args.value;
-	        }
-	      }
-
-	      if (args.nonInteraction) {
-	        if (typeof args.nonInteraction !== 'boolean') {
-	          warn('`args.nonInteraction` must be a boolean.');
-	        } else {
-	          fieldObject.nonInteraction = args.nonInteraction;
-	        }
-	      }
-
-	      if (args.transport) {
-	        if (typeof args.transport !== 'string') {
-	          warn('`args.transport` must be a string.');
-	        } else {
-	          if (['beacon', 'xhr', 'image'].indexOf(args.transport) === -1) {
-	            warn('`args.transport` must be either one of these values: `beacon`, `xhr` or `image`');
-	          }
-
-	          fieldObject.transport = args.transport;
-	        }
-	      }
-
-	      // Send to GA
-	      this.send(fieldObject);
-	    }
-	  },
-
-	  /**
-	   * exception:
-	   * GA exception tracking
-	   * @param args.description {String} optional
-	   * @param args.fatal {boolean} optional
-	   */
-	  exception: function (args) {
-	    if (typeof ga === 'function') {
-
-	      // Required Fields
-	      var fieldObject = {
-	        hitType: 'exception'
-	      };
-
-	      // Optional Fields
-	      if (args.description) {
-	        fieldObject.exDescription = _format(args.description);
-	      }
-
-	      if (typeof args.fatal !== 'undefined') {
-	        if (typeof args.fatal !== 'boolean') {
-	          warn('`args.fatal` must be a boolean.');
-	        } else {
-	          fieldObject.exFatal = args.fatal;
-	        }
-	      }
-
-	      // Send to GA
-	      this.send(fieldObject);
-	    }
-	  },
-
-	  plugin: {
-	    /**
-	     * require:
-	     * GA requires a plugin
-	     * @param name {String} e.g. 'ecommerce' or 'myplugin'
-	     * @param options {Object} optional e.g {path: '/log', debug: true}
-	     */
-	    require: function (name, options) {
-	      if (typeof ga === 'function') {
-
-	        // Required Fields
-	        if (!name) {
-	          warn('`name` is required in .require()');
-	          return;
-	        }
-
-	        name = trim(name);
-	        if (name === '') {
-	          warn('`name` cannot be an empty string in .require()');
-	          return;
-	        }
-
-	        // Optional Fields
-	        if (options) {
-	          if (typeof options !== 'object') {
-	            warn('Expected `options` arg to be an Object');
-	            return;
-	          }
-
-	          if (Object.keys(options).length === 0) {
-	            warn('Empty `options` given to .require()');
-	          }
-
-	          ga('require', name, options);
-
-	          if (_debug) {
-	            log('called ga(\'require\', \'' + name + '\', ' + JSON.stringify(options) + ');');
-	          }
-
-	          return;
-	        } else {
-	          ga('require', name);
-
-	          if (_debug) {
-	            log('called ga(\'require\', \'' + name + '\');');
-	          }
-
-	          return;
-	        }
-	      }
-	    },
-
-	    /**
-	     * execute:
-	     * GA execute action for plugin
-	     * Takes variable number of arguments
-	     * @param pluginName {String} e.g. 'ecommerce' or 'myplugin'
-	     * @param action {String} e.g. 'addItem' or 'myCustomAction'
-	     * @param actionType {String} optional e.g. 'detail'
-	     * @param payload {Object} optional e.g { id: '1x5e', name : 'My product to track' }
-	     */
-	    execute: function () {
-	      var args = Array.prototype.slice.call(arguments);
-
-	      var pluginName = args[0];
-	      var action = args[1];
-	      var payload;
-	      var actionType;
-
-	      if (args.length === 3) {
-	        payload = args[2];
-	      } else {
-	        actionType = args[2];
-	        payload = args[3];
-	      }
-
-	      if (typeof ga === 'function') {
-	        if (typeof pluginName !== 'string') {
-	          warn('Expected `pluginName` arg to be a String.');
-	        } else if (typeof action !== 'string') {
-	          warn('Expected `action` arg to be a String.');
-	        } else {
-	          var command = pluginName + ':' + action;
-	          payload = payload || null;
-	          if (actionType && payload) {
-	            ga(command, actionType, payload);
-	            if (_debug) {
-	              log('called ga(\'' + command + '\');');
-	              log('actionType: "' + actionType + '" with payload: ' + JSON.stringify(payload));
-	            }
-	          } else if (payload) {
-	            ga(command, payload);
-	            if (_debug) {
-	              log('called ga(\'' + command + '\');');
-	              log('with payload: ' + JSON.stringify(payload));
-	            }
-	          } else {
-	            ga(command);
-	            if (_debug) {
-	              log('called ga(\'' + command + '\');');
-	            }
-
-	          }
-	        }
-	      }
-	    }
-	  },
-
-	  /**
-	   * outboundLink:
-	   * GA outboundLink tracking
-	   * @param args.label {String} e.g. url, or 'Create an Account'
-	   * @param {function} hitCallback - Called after processing a hit.
-	   */
-	  outboundLink: function (args, hitCallback) {
-	    if (typeof hitCallback !== 'function') {
-	      warn('hitCallback function is required');
-	      return;
-	    }
-
-	    if (typeof ga === 'function') {
-
-	      // Simple Validation
-	      if (!args || !args.label) {
-	        warn('args.label is required in outboundLink()');
-	        return;
-	      }
-
-	      // Required Fields
-	      var fieldObject = {
-	        hitType: 'event',
-	        eventCategory: 'Outbound',
-	        eventAction: 'Click',
-	        eventLabel: _format(args.label)
-	      };
-
-	      var safetyCallbackCalled = false;
-	      var safetyCallback = function () {
-
-	        // This prevents a delayed response from GA
-	        // causing hitCallback from being fired twice
-	        safetyCallbackCalled = true;
-
-	        hitCallback();
-	      };
-
-	      // Using a timeout to ensure the execution of critical application code
-	      // in the case when the GA server might be down
-	      // or an ad blocker prevents sending the data
-
-	      // register safety net timeout:
-	      var t = setTimeout(safetyCallback, 250);
-
-	      var clearableCallbackForGA = function () {
-	        clearTimeout(t);
-	        if (!safetyCallbackCalled) {
-	          hitCallback();
-	        }
-	      };
-
-	      fieldObject.hitCallback = clearableCallbackForGA;
-
-	      // Send to GA
-	      this.send(fieldObject);
-	    } else {
-	      // if ga is not defined, return the callback so the application
-	      // continues to work as expected
-	      setTimeout(hitCallback, 0);
-	    }
-	  }
-	};
-
-	var OutboundLink = __webpack_require__(300);
-	OutboundLink.origTrackLink = OutboundLink.trackLink;
-	OutboundLink.trackLink = ReactGA.outboundLink.bind(ReactGA);
-	ReactGA.OutboundLink = OutboundLink;
-
-	module.exports = ReactGA;
-
-
-/***/ }),
-/* 293 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var mightBeEmail = __webpack_require__(294);
-	var toTitleCase = __webpack_require__(295);
-	var warn = __webpack_require__(297);
-
-	var _redacted = 'REDACTED (Potential Email Address)';
-
-	function format(s, titleCase) {
-	  if (mightBeEmail(s)) {
-	    warn('This arg looks like an email address, redacting.');
-	    return _redacted;
-	  }
-
-	  if (titleCase) {
-	    return toTitleCase(s);
-	  }
-
-	  return s;
-	}
-
-	module.exports = format;
-
-
-/***/ }),
-/* 294 */
-/***/ (function(module, exports) {
-
-	// See if s could be an email address. We don't want to send personal data like email.
-	// https://support.google.com/analytics/answer/2795983?hl=en
-	function mightBeEmail(s) {
-	  // There's no point trying to validate rfc822 fully, just look for ...@...
-	  return (/[^@]+@[^@]+/).test(s);
-	}
-
-	module.exports = mightBeEmail;
-
-
-/***/ }),
-/* 295 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/**
-	 * To Title Case 2.1 - http://individed.com/code/to-title-case/
-	 * Copyright 2008-2013 David Gouch. Licensed under the MIT License.
-	 * https://github.com/gouch/to-title-case
-	 */
-
-	var trim = __webpack_require__(296);
-
-	function toTitleCase(s) {
-	  var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
-	  s = trim(s);
-
-	  return s.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, function (match, index, title) {
-	    if (index > 0 &&
-	        index + match.length !== title.length &&
-	        match.search(smallWords) > -1 &&
-	        title.charAt(index - 2) !== ':' &&
-	        (title.charAt(index + match.length) !== '-' || title.charAt(index - 1) === '-') &&
-	        title.charAt(index - 1).search(/[^\s-]/) < 0) {
-	      return match.toLowerCase();
-	    }
-
-	    if (match.substr(1).search(/[A-Z]|\../) > -1) {
-	      return match;
-	    }
-
-	    return match.charAt(0).toUpperCase() + match.substr(1);
-	  });
-	}
-
-	module.exports = toTitleCase;
-
-
-/***/ }),
-/* 296 */
-/***/ (function(module, exports) {
-
-	// GA strings need to have leading/trailing whitespace trimmed, and not all
-	// browsers have String.prototoype.trim().
-
-	function trim(s) {
-	  return s.replace(/^\s+|\s+$/g, '');
-	}
-
-	module.exports = trim;
-
-
-/***/ }),
-/* 297 */
-/***/ (function(module, exports) {
-
-	function warn(s) {
-	  console.warn('[react-ga]', s);
-	}
-
-	module.exports = warn;
-
-
-/***/ }),
-/* 298 */
-/***/ (function(module, exports) {
-
-	function removeLeadingSlash(s) {
-	  if (s.substring(0, 1) === '/') {
-	    s = s.substring(1);
-	  }
-
-	  return s;
-	}
-
-	module.exports = removeLeadingSlash;
-
-
-/***/ }),
-/* 299 */
-/***/ (function(module, exports) {
-
-	function log(s) {
-	  console.info('[react-ga]', s);
-	}
-
-	module.exports = log;
-
-
-/***/ }),
-/* 300 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var CreateReactClass = __webpack_require__(301);
-	var PropTypes = __webpack_require__(302);
-	var assign = __webpack_require__(4);
-
-	var NEWTAB = '_blank';
-
-	var OutboundLink = CreateReactClass({
-	  displayName: 'OutboundLink',
-	  propTypes: {
-	    eventLabel: PropTypes.string.isRequired
-	  },
-	  statics: {
-	    trackLink: function () {
-	      console.warn('ga tracking not enabled');
-	    }
-	  },
-	  handleClick: function (e) {
-	    e.preventDefault();
-	    var props = this.props;
-	    var eventMeta = { label: props.eventLabel };
-	    OutboundLink.trackLink(eventMeta, function () {
-	      if (props.target === NEWTAB) {
-	        window.open(props.to, NEWTAB);
-	      } else {
-	        window.location.href = props.to;
-	      }
-	    });
-
-	    if (props.onClick) {
-	      props.onClick(e);
-	    }
-	  },
-
-	  render: function () {
-	    var props = assign({}, this.props, {
-	      href: this.props.to,
-	      onClick: this.handleClick
-	    });
-	    delete props.eventLabel;
-	    return React.createElement('a', props);
-	  }
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
 	});
 
-	module.exports = OutboundLink;
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 
+	var _react = __webpack_require__(1);
 
-/***/ }),
-/* 301 */
-/***/ (function(module, exports, __webpack_require__) {
+	var _react2 = _interopRequireDefault(_react);
 
-	/**
-	 * Copyright 2013-present, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 */
+	var _propTypes = __webpack_require__(291);
 
-	'use strict';
+	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var React = __webpack_require__(1);
-	var factory = __webpack_require__(35);
-
-	if (typeof React === 'undefined') {
-	  throw Error(
-	    'create-react-class could not find the React object. If you are using script tags, ' +
-	      'make sure that React is being loaded before create-react-class.'
-	  );
+	function _interopRequireDefault(obj) {
+	  return obj && obj.__esModule ? obj : { default: obj };
 	}
 
-	// Hack to grab NoopUpdateQueue from isomorphic React
-	var ReactNoopUpdateQueue = new React.Component().updater;
+	function _objectWithoutProperties(obj, keys) {
+	  var target = {};for (var i in obj) {
+	    if (keys.indexOf(i) >= 0) continue;if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;target[i] = obj[i];
+	  }return target;
+	}
 
-	module.exports = factory(
-	  React.Component,
-	  React.isValidElement,
-	  ReactNoopUpdateQueue
-	);
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 
+	function _possibleConstructorReturn(self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+	}
+
+	function _inherits(subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+	  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	}
+
+	var InfiniteScroll = function (_Component) {
+	  _inherits(InfiniteScroll, _Component);
+
+	  function InfiniteScroll(props) {
+	    _classCallCheck(this, InfiniteScroll);
+
+	    var _this = _possibleConstructorReturn(this, (InfiniteScroll.__proto__ || Object.getPrototypeOf(InfiniteScroll)).call(this, props));
+
+	    _this.scrollListener = _this.scrollListener.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(InfiniteScroll, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.pageLoaded = this.props.pageStart;
+	      this.attachScrollListener();
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate() {
+	      this.attachScrollListener();
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.detachScrollListener();
+	    }
+
+	    // Set a defaut loader for all your `InfiniteScroll` components
+
+	  }, {
+	    key: 'setDefaultLoader',
+	    value: function setDefaultLoader(loader) {
+	      this.defaultLoader = loader;
+	    }
+	  }, {
+	    key: 'detachScrollListener',
+	    value: function detachScrollListener() {
+	      var scrollEl = window;
+	      if (this.props.useWindow === false) {
+	        scrollEl = this.scrollComponent.parentNode;
+	      }
+
+	      scrollEl.removeEventListener('scroll', this.scrollListener, this.props.useCapture);
+	      scrollEl.removeEventListener('resize', this.scrollListener, this.props.useCapture);
+	    }
+	  }, {
+	    key: 'attachScrollListener',
+	    value: function attachScrollListener() {
+	      if (!this.props.hasMore) {
+	        return;
+	      }
+
+	      var scrollEl = window;
+	      if (this.props.useWindow === false) {
+	        scrollEl = this.scrollComponent.parentNode;
+	      }
+
+	      scrollEl.addEventListener('scroll', this.scrollListener, this.props.useCapture);
+	      scrollEl.addEventListener('resize', this.scrollListener, this.props.useCapture);
+
+	      if (this.props.initialLoad) {
+	        this.scrollListener();
+	      }
+	    }
+	  }, {
+	    key: 'scrollListener',
+	    value: function scrollListener() {
+	      var el = this.scrollComponent;
+	      var scrollEl = window;
+
+	      var offset = void 0;
+	      if (this.props.useWindow) {
+	        var scrollTop = scrollEl.pageYOffset !== undefined ? scrollEl.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+	        if (this.props.isReverse) {
+	          offset = scrollTop;
+	        } else {
+	          offset = this.calculateTopPosition(el) + (el.offsetHeight - scrollTop - window.innerHeight);
+	        }
+	      } else if (this.props.isReverse) {
+	        offset = el.parentNode.scrollTop;
+	      } else {
+	        offset = el.scrollHeight - el.parentNode.scrollTop - el.parentNode.clientHeight;
+	      }
+
+	      if (offset < Number(this.props.threshold)) {
+	        this.detachScrollListener();
+	        // Call loadMore after detachScrollListener to allow for non-async loadMore functions
+	        if (typeof this.props.loadMore === 'function') {
+	          this.props.loadMore(this.pageLoaded += 1);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'calculateTopPosition',
+	    value: function calculateTopPosition(el) {
+	      if (!el) {
+	        return 0;
+	      }
+	      return el.offsetTop + this.calculateTopPosition(el.offsetParent);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var _props = this.props,
+	          children = _props.children,
+	          element = _props.element,
+	          hasMore = _props.hasMore,
+	          initialLoad = _props.initialLoad,
+	          isReverse = _props.isReverse,
+	          loader = _props.loader,
+	          loadMore = _props.loadMore,
+	          pageStart = _props.pageStart,
+	          threshold = _props.threshold,
+	          useCapture = _props.useCapture,
+	          useWindow = _props.useWindow,
+	          props = _objectWithoutProperties(_props, ['children', 'element', 'hasMore', 'initialLoad', 'isReverse', 'loader', 'loadMore', 'pageStart', 'threshold', 'useCapture', 'useWindow']);
+
+	      props.ref = function (node) {
+	        _this2.scrollComponent = node;
+	      };
+
+	      if (isReverse) {
+	        return _react2.default.createElement(element, props, hasMore && (loader || this.defaultLoader), children);
+	      }
+
+	      return _react2.default.createElement(element, props, children, hasMore && (loader || this.defaultLoader));
+	    }
+	  }]);
+
+	  return InfiniteScroll;
+	}(_react.Component);
+
+	InfiniteScroll.propTypes = {
+	  element: _propTypes2.default.string,
+	  hasMore: _propTypes2.default.bool,
+	  initialLoad: _propTypes2.default.bool,
+	  isReverse: _propTypes2.default.bool,
+	  loadMore: _propTypes2.default.func.isRequired,
+	  pageStart: _propTypes2.default.number,
+	  threshold: _propTypes2.default.number,
+	  useCapture: _propTypes2.default.bool,
+	  useWindow: _propTypes2.default.bool,
+	  children: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
+	  loader: _propTypes2.default.object
+	};
+	InfiniteScroll.defaultProps = {
+	  element: 'div',
+	  hasMore: false,
+	  initialLoad: true,
+	  pageStart: 0,
+	  threshold: 250,
+	  useWindow: true,
+	  isReverse: false,
+	  useCapture: false,
+	  loader: null
+	};
+	exports.default = InfiniteScroll;
+	module.exports = exports['default'];
 
 /***/ }),
-/* 302 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -32212,13 +31587,13 @@
 	} else {
 	  // By explicitly using `prop-types` you are opting into new production behavior.
 	  // http://fb.me/prop-types-in-prod
-	  module.exports = __webpack_require__(303)();
+	  module.exports = __webpack_require__(292)();
 	}
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 303 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -32281,6 +31656,237 @@
 	  return ReactPropTypes;
 	};
 
+
+/***/ }),
+/* 293 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _reactRouter = __webpack_require__(185);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Shot = function (_Component) {
+		_inherits(Shot, _Component);
+
+		function Shot() {
+			_classCallCheck(this, Shot);
+
+			return _possibleConstructorReturn(this, (Shot.__proto__ || Object.getPrototypeOf(Shot)).apply(this, arguments));
+		}
+
+		_createClass(Shot, [{
+			key: 'render',
+			value: function render() {
+				var data = this.props.data;
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'Shot' },
+					_react2.default.createElement(
+						_reactRouter.Link,
+						{ to: 'details/' + data.id },
+						_react2.default.createElement(
+							'span',
+							{ className: 'avatar' },
+							_react2.default.createElement('img', { src: data.user.avatar_url })
+						),
+						_react2.default.createElement(
+							'figure',
+							null,
+							_react2.default.createElement('img', { src: data.images.teaser })
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'info' },
+							_react2.default.createElement(
+								'h3',
+								{ className: 'title' },
+								data.title
+							),
+							_react2.default.createElement(
+								'p',
+								null,
+								'Followers: ',
+								data.user.followers_count
+							)
+						)
+					)
+				);
+			}
+		}]);
+
+		return Shot;
+	}(_react.Component);
+
+	exports.default = Shot;
+
+/***/ }),
+/* 294 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _axios = __webpack_require__(271);
+
+	var _axios2 = _interopRequireDefault(_axios);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var api = {
+		baseUrl: 'https://api.dribbble.com/v1/shots',
+		client_id: '04e0cabe39b68eba31d3d107faf3dc259d45448242bd4af0716fa042a4e2d072'
+	};
+
+	var Details = function (_Component) {
+		_inherits(Details, _Component);
+
+		function Details(props) {
+			_classCallCheck(this, Details);
+
+			var _this = _possibleConstructorReturn(this, (Details.__proto__ || Object.getPrototypeOf(Details)).call(this, props));
+
+			_this.state = {
+				id: props.params.id,
+				image: null,
+				title: null,
+				avatar_url: null,
+				bio: null
+
+			};
+			return _this;
+		}
+
+		_createClass(Details, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var _this2 = this;
+
+				_axios2.default.get(api.baseUrl + '/' + this.state.id + '?access_token=' + api.client_id).then(function (response) {
+					console.log(response);
+					var res = response.data;
+					_this2.setState({
+						image: res.images.teaser,
+						title: res.title,
+						avatar_url: res.user.avatar_url,
+						bio: res.user.bio,
+						followers: res.user.followers_count,
+						name: res.user.name,
+						description: res.description
+
+					});
+				}).catch(function (err) {
+
+					console.log(err);
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'PageDetails' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'Shot' },
+						_react2.default.createElement(
+							'figure',
+							null,
+							_react2.default.createElement('img', { src: this.state.image })
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'info' },
+							_react2.default.createElement(
+								'h3',
+								{ className: 'title' },
+								this.state.title
+							),
+							_react2.default.createElement(
+								'p',
+								null,
+								'Followers: ',
+								this.state.followers
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'others-details' },
+						_react2.default.createElement(
+							'header',
+							null,
+							_react2.default.createElement(
+								'figure',
+								null,
+								_react2.default.createElement(
+									'span',
+									{ className: 'avatar' },
+									_react2.default.createElement('img', { src: this.state.avatar_url })
+								)
+							),
+							_react2.default.createElement(
+								'h4',
+								{ className: 'title' },
+								this.state.name
+							)
+						),
+						_react2.default.createElement(
+							'article',
+							null,
+							_react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: this.state.description } })
+						)
+					)
+				);
+			}
+		}]);
+
+		return Details;
+	}(_react.Component);
+
+	exports.default = Details;
 
 /***/ })
 /******/ ]);

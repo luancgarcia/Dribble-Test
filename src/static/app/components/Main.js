@@ -9,10 +9,6 @@ class Main extends Component {
 
 	}
 
-	componentDidMount(){
-	
-	}
-
 	render(){
 
 		return (
@@ -25,8 +21,4 @@ class Main extends Component {
 	}
 };
 
-
-
 export default Main;
-
-// no return acima do componente Copywriter, colocar <Footer menu={menu} /> quando for pra voltar com o menu do footer.
