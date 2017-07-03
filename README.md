@@ -1,10 +1,15 @@
+#Rodar o Projeto
+
+* npm install
+* gulp
+* make run
+
 # Template de uma página de video
 
 Essa aplicação é um modelo que o cliente poderá escolher para ser a página de videos.
 
 ### Tecnologias usadas:
 *	ReactJS
-*	Reflux
 *	Gulp 
 *	Sass 
 
@@ -37,11 +42,7 @@ Para iniciar o projeto, utilize o comando 'Make npm' para instalar as seguintes 
 
 Para rodar a aplicação executar os comandos:
 
-1. setvirtualenvproject
-2. mkvirtualenv stormsec-ott.template01-web
-3. workon stormsec-ott.template01-web
-4. Make pack
-5. Make
+1. Make
 
 
 ### Estrutura de pastas
@@ -49,7 +50,7 @@ Para rodar a aplicação executar os comandos:
 * / (raiz)
 	Arquivos de configuracao.
 
-* App
+* Src
 	Diretorio que estao localizados os arquivos JS.
 
 * Dist
@@ -57,9 +58,6 @@ Para rodar a aplicação executar os comandos:
 
 * Node_modules
 	Dependencias.
-
-* Src
-	Arquivos de desenvolvimento
 
 
 
